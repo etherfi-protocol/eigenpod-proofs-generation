@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	eigenpodproofs "github.com/Layr-Labs/eigenpod-proofs-generation"
+	"github.com/Layr-Labs/eigenpod-proofs-generation/bindings/etherfiNodesManager"
 	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/core/onchain"
 	v1 "github.com/attestantio/go-eth2-client/api/v1"
 	"github.com/attestantio/go-eth2-client/spec"
@@ -68,7 +69,7 @@ func SubmitCheckpointProof(ctx context.Context, owner, eigenpodAddress string, c
 }
 
 func SubmitCheckpointProofBatch(ctx context.Context, owner, eigenpodAddress string, chainId *big.Int, proof *eigenpodproofs.ValidatorBalancesRootProof, balanceProofs []*eigenpodproofs.BalanceProof, eth *ethclient.Client, noSend bool, verbose bool) (*types.Transaction, error) {
-	tracing := GetContextTracingCallbacks(ctx)
+	//tracing := GetContextTracingCallbacks(ctx)
 
 	ownerAccount, err := PrepareAccount(&owner, chainId, noSend)
 	if err != nil {
@@ -84,20 +85,56 @@ func SubmitCheckpointProofBatch(ctx context.Context, owner, eigenpodAddress stri
 		return nil, err
 	}
 
-	tracing.OnStartSection("pepe::proof::checkpoint::onchain::VerifyCheckpointProofs", map[string]string{
-		"eigenpod": eigenpodAddress,
-	})
-	txn, err := eigenPod.VerifyCheckpointProofs(
-		ownerAccount.TransactionOptions,
+	/*
+
+		tracing.OnStartSection("pepe::proof::checkpoint::onchain::VerifyCheckpointProofs", map[string]string{
+			"eigenpod": eigenpodAddress,
+		})
+		txn, err := eigenPod.VerifyCheckpointProofs(
+			ownerAccount.TransactionOptions,
+			onchain.BeaconChainProofsBalanceContainerProof{
+				BalanceContainerRoot: proof.ValidatorBalancesRoot,
+				Proof:                proof.Proof.ToByteSlice(),
+			},
+			CastBalanceProofs(balanceProofs),
+		)
+		tracing.OnEndSection()
+		if err != nil {
+			return nil, err
+		}
+	*/
+	// manually pack tx data since we are forwarding the call via the etherfiNodesManager
+	eigenPodABI, err := onchain.EigenPodMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("fetching abi: %w", err)
+	}
+	calldata, err := eigenPodABI.Pack("verifyCheckpointProofs",
 		onchain.BeaconChainProofsBalanceContainerProof{
 			BalanceContainerRoot: proof.ValidatorBalancesRoot,
 			Proof:                proof.Proof.ToByteSlice(),
 		},
 		CastBalanceProofs(balanceProofs),
 	)
-	tracing.OnEndSection()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("packing verifyCheckpointProofs: %w", err)
+	}
+
+	etherfiNodesManager, err := etherfiNodesManager.NewEtherfiNodesManager(common.HexToAddress("0x8b71140ad2e5d1e7018d2a7f8a288bd3cd38916f"), eth)
+	if err != nil {
+		return nil, fmt.Errorf("binding etherfiNodesManager: %w", err)
+	}
+
+	// look up etherfiNode address which happens to be eigenpod.podOwner()
+	etherfiNode, err := eigenPod.PodOwner(nil)
+	if err != nil {
+		return nil, fmt.Errorf("looking up podOwner: %w", err)
+	}
+	nodeAddrs := []common.Address{etherfiNode}
+	data := [][]byte{calldata}
+
+	txn, err := etherfiNodesManager.ForwardEigenpodCall0(ownerAccount.TransactionOptions, nodeAddrs, data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to submit checkpoint proofs: %w", err)
 	}
 
 	return txn, nil
