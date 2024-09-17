@@ -1,4 +1,12 @@
-WARNING: Please note that this repository is a work in progress and is currently unaudited. Use it with caution as it may contain unfinished features or bugs."
+This is a fork of https://github.com/Layr-Labs/eigenpod-proofs-generation that wraps
+checkpoint related transactions to be use `etherfiNodesManager.forwardEigenpodCall()`
+instead of calling the methods directly on the eigenpod. The reason for this is
+so that we don't need to set `eigenpod.proofSubmitter` for all 50k eigenpods we control
+
+You should be able to use this fork exactly as you would the normal CLI. The
+`--sender` key you use must have `operatingAdmin` permissions on `EtherfiNodesManager` contract
+
+Only supports mainnet at this time
 
 # Introduction
 

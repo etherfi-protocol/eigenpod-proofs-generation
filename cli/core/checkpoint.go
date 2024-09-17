@@ -69,7 +69,7 @@ func SubmitCheckpointProof(ctx context.Context, owner, eigenpodAddress string, c
 }
 
 func SubmitCheckpointProofBatch(ctx context.Context, owner, eigenpodAddress string, chainId *big.Int, proof *eigenpodproofs.ValidatorBalancesRootProof, balanceProofs []*eigenpodproofs.BalanceProof, eth *ethclient.Client, noSend bool, verbose bool) (*types.Transaction, error) {
-	//tracing := GetContextTracingCallbacks(ctx)
+	tracing := GetContextTracingCallbacks(ctx)
 
 	ownerAccount, err := PrepareAccount(&owner, chainId, noSend)
 	if err != nil {
@@ -85,24 +85,11 @@ func SubmitCheckpointProofBatch(ctx context.Context, owner, eigenpodAddress stri
 		return nil, err
 	}
 
-	/*
+	tracing.OnStartSection("pepe::proof::checkpoint::onchain::VerifyCheckpointProofs", map[string]string{
+		"eigenpod": eigenpodAddress,
+	})
+	defer tracing.OnEndSection()
 
-		tracing.OnStartSection("pepe::proof::checkpoint::onchain::VerifyCheckpointProofs", map[string]string{
-			"eigenpod": eigenpodAddress,
-		})
-		txn, err := eigenPod.VerifyCheckpointProofs(
-			ownerAccount.TransactionOptions,
-			onchain.BeaconChainProofsBalanceContainerProof{
-				BalanceContainerRoot: proof.ValidatorBalancesRoot,
-				Proof:                proof.Proof.ToByteSlice(),
-			},
-			CastBalanceProofs(balanceProofs),
-		)
-		tracing.OnEndSection()
-		if err != nil {
-			return nil, err
-		}
-	*/
 	// manually pack tx data since we are forwarding the call via the etherfiNodesManager
 	eigenPodABI, err := onchain.EigenPodMetaData.GetAbi()
 	if err != nil {
@@ -119,6 +106,7 @@ func SubmitCheckpointProofBatch(ctx context.Context, owner, eigenpodAddress stri
 		return nil, fmt.Errorf("packing verifyCheckpointProofs: %w", err)
 	}
 
+	// hardcoded to mainnet for now
 	etherfiNodesManager, err := etherfiNodesManager.NewEtherfiNodesManager(common.HexToAddress("0x8b71140ad2e5d1e7018d2a7f8a288bd3cd38916f"), eth)
 	if err != nil {
 		return nil, fmt.Errorf("binding etherfiNodesManager: %w", err)

@@ -140,6 +140,7 @@ func StartCheckpoint(ctx context.Context, eigenpodAddress string, ownerPrivateKe
 		return nil, fmt.Errorf("packing startCheckpoint: %w", err)
 	}
 
+	// hardcoded to mainnet for now
 	etherfiNodesManager, err := etherfiNodesManager.NewEtherfiNodesManager(common.HexToAddress("0x8b71140ad2e5d1e7018d2a7f8a288bd3cd38916f"), eth)
 	if err != nil {
 		return nil, fmt.Errorf("binding etherfiNodesManager: %w", err)
@@ -163,20 +164,6 @@ func StartCheckpoint(ctx context.Context, eigenpodAddress string, ownerPrivateKe
 	}
 
 	return txn, nil
-
-	/*
-
-		txn, err := eigenPod.StartCheckpoint(ownerAccount.TransactionOptions, revertIfNoBalance)
-		if err != nil {
-			if !forceCheckpoint {
-				return nil, fmt.Errorf("failed to start checkpoint (try running again with `--force`): %w", err)
-			}
-
-			return nil, fmt.Errorf("failed to start checkpoint: %w", err)
-		}
-
-		return txn, nil
-	*/
 }
 
 func GetBeaconClient(beaconUri string, verbose bool) (BeaconClient, error) {
