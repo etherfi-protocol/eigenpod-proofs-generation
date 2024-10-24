@@ -3,7 +3,7 @@ package beacon
 import (
 	"reflect"
 
-	"github.com/Layr-Labs/eigenpod-proofs-generation/common"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/common"
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 )
 

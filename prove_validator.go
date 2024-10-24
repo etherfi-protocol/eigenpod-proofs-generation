@@ -7,8 +7,8 @@ import (
 	"github.com/attestantio/go-eth2-client/spec"
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 
-	beacon "github.com/Layr-Labs/eigenpod-proofs-generation/beacon"
-	"github.com/Layr-Labs/eigenpod-proofs-generation/common"
+	beacon "github.com/etherfi-protocol/eigenpod-proofs-generation/beacon"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/common"
 )
 
 type StateRootProof struct {

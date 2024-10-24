@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/core/onchain"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/core/onchain"
 	"github.com/attestantio/go-eth2-client/spec"
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	gethCommon "github.com/ethereum/go-ethereum/common"

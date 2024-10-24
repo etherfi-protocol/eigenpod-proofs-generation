@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/core"
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/core/onchain"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/core"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/core/onchain"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/fatih/color"

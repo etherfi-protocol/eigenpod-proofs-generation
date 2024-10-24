@@ -9,9 +9,9 @@ import (
 	"os"
 	"strconv"
 
-	eigenpodproofs "github.com/Layr-Labs/eigenpod-proofs-generation"
-	"github.com/Layr-Labs/eigenpod-proofs-generation/bindings/etherfiNodesManager"
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/core/onchain"
+	eigenpodproofs "github.com/etherfi-protocol/eigenpod-proofs-generation"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/bindings/etherfiNodesManager"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/core/onchain"
 	v1 "github.com/attestantio/go-eth2-client/api/v1"
 	"github.com/attestantio/go-eth2-client/spec"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"

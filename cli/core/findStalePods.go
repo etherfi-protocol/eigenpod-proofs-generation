@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/core/onchain"
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/utils"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/core/onchain"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/utils"
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"

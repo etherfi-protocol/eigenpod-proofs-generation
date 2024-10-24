@@ -8,8 +8,8 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/core"
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/utils"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/core"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/utils"
 	"github.com/fatih/color"
 )
 

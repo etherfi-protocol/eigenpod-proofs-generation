@@ -1,4 +1,4 @@
-module github.com/Layr-Labs/eigenpod-proofs-generation
+module github.com/etherfi-protocol/eigenpod-proofs-generation
 
 go 1.21
 

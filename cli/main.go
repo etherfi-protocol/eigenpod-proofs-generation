@@ -4,8 +4,8 @@ import (
 	"math"
 	"os"
 
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/commands"
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/utils"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/commands"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/utils"
 	cli "github.com/urfave/cli/v2"
 )
 

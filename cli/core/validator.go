@@ -8,14 +8,15 @@ import (
 	"os"
 	"strconv"
 
-	eigenpodproofs "github.com/Layr-Labs/eigenpod-proofs-generation"
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/core/onchain"
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/utils"
 	v1 "github.com/attestantio/go-eth2-client/api/v1"
 	"github.com/attestantio/go-eth2-client/spec"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	eigenpodproofs "github.com/etherfi-protocol/eigenpod-proofs-generation"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/bindings/etherfiNodesManager"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/core/onchain"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/utils"
 	"github.com/fatih/color"
 )
 
@@ -102,8 +103,13 @@ func SubmitValidatorProofChunk(ctx context.Context, ownerAccount *Owner, eigenPo
 	if verbose {
 		color.Green("submitting onchain...")
 	}
-	txn, err := eigenPod.VerifyWithdrawalCredentials(
-		ownerAccount.TransactionOptions,
+
+	// manually pack tx data since we are forwarding the call via the etherfiNodesManager
+	eigenPodABI, err := onchain.EigenPodMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("fetching abi: %w", err)
+	}
+	calldata, err := eigenPodABI.Pack("verifyWithdrawalCredentials",
 		oracleBeaconTimesetamp,
 		onchain.BeaconChainProofsStateRootProof{
 			Proof:           stateRootProofs.Proof.ToByteSlice(),
@@ -113,8 +119,45 @@ func SubmitValidatorProofChunk(ctx context.Context, ownerAccount *Owner, eigenPo
 		validatorFieldsProofs,
 		validatorFields,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("packing verifyWithdrawalCredentials: %w", err)
+	}
+
+	// hardcoded to mainnet for now
+	etherfiNodesManager, err := etherfiNodesManager.NewEtherfiNodesManager(common.HexToAddress("0x8b71140ad2e5d1e7018d2a7f8a288bd3cd38916f"), eth)
+	if err != nil {
+		return nil, fmt.Errorf("binding etherfiNodesManager: %w", err)
+	}
+
+	// look up etherfiNode address which happens to be eigenpod.podOwner()
+	etherfiNode, err := eigenPod.PodOwner(nil)
+	if err != nil {
+		return nil, fmt.Errorf("looking up podOwner: %w", err)
+	}
+	nodeAddrs := []common.Address{etherfiNode}
+	data := [][]byte{calldata}
+
+	txn, err := etherfiNodesManager.ForwardEigenpodCall0(ownerAccount.TransactionOptions, nodeAddrs, data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to submit verifyWithdrawalCredentials: %w", err)
+	}
+
+	/*
+		txn, err := eigenPod.VerifyWithdrawalCredentials(
+			ownerAccount.TransactionOptions,
+			oracleBeaconTimesetamp,
+			onchain.BeaconChainProofsStateRootProof{
+				Proof:           stateRootProofs.Proof.ToByteSlice(),
+				BeaconStateRoot: stateRootProofs.BeaconStateRoot,
+			},
+			indices,
+			validatorFieldsProofs,
+			validatorFields,
+		)
+	*/
 
 	return txn, err
+
 }
 
 /**

@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	contractBeaconChainProofsWrapper "github.com/Layr-Labs/eigenpod-proofs-generation/bindings/BeaconChainProofsWrapper"
+	contractBeaconChainProofsWrapper "github.com/etherfi-protocol/eigenpod-proofs-generation/bindings/BeaconChainProofsWrapper"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/stretchr/testify/assert"
 )

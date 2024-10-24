@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Layr-Labs/eigenpod-proofs-generation/cli/core"
+	"github.com/etherfi-protocol/eigenpod-proofs-generation/cli/core"
 	"github.com/fatih/color"
 )
 
